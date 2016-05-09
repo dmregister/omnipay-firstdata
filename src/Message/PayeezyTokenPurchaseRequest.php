@@ -50,7 +50,7 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
      *
      * @return string
      */
-    protected function buildAuthString($data, $nonce, $timestamp)
+    protected function buildTokenAuthString($data, $nonce, $timestamp)
     {
         $dataString = sprintf(
             '%s%s%s%s%s',
@@ -103,7 +103,7 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
         $endpoint = $this->getEndpoint();
 
         $headers = $this->getHeaders();
-        $headers['Authorization'] = $this->buildAuthString($data, $headers['nonce'], $headers['timestamp']);
+        $headers['Authorization'] = $this->buildTokenAuthString($data, $headers['nonce'], $headers['timestamp']);
 
         $client = $this->httpClient->post(
             $endpoint,
