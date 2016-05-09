@@ -2,212 +2,37 @@
 
 namespace Omnipay\FirstData\Message;
 
-
 class PayeezyTokenizeRequest extends PayeezyAbstractRequest
 {
-    /** API version to use. See the note about the hashing requirements for v12 or higher. */
-    const API_VERSION = 'v1';
-
-    /** @var string live endpoint URL base */
-    protected $liveEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions/tokens';
-
-    /** @var string test endpoint URL base */
-    protected $testEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions/tokens';
-
-    /**
-     * Set Type
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyAbstractRequest provides a fluent interface.
-     */
-    public function setType($value)
-    {
-        return $this->setParameter('type', $value);
-    }
-
-    /**
-     * Get Type
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->getParameter('type');
-    }
-
-    /**
-     * Set Auth
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyAbstractRequest provides a fluent interface.
-     */
-    public function setAuth($value)
-    {
-        return $this->setParameter('auth', $value);
-    }
-
-    /**
-     * Get Auth
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getAuth()
-    {
-        return $this->getParameter('auth');
-    }
-
-    /**
-     * Set Type
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyAbstractRequest provides a fluent interface.
-     */
-    public function setTaToken($value)
-    {
-        return $this->setParameter('taToken', $value);
-    }
-
-    /**
-     * Get Type
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getTaToken()
-    {
-        return $this->getParameter('taToken');
-    }
-
-    /**
-     * Set Merchant Token
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyAbstractRequest provides a fluent interface.
-     */
-    public function setMerchantToken($value)
-    {
-        return $this->setParameter('merchantToken', $value);
-    }
-
-
-    /**
-     * @return string
-     */
-    protected function getEndpoint()
-    {
-        return ($this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint);
-    }
+    protected $action = self::TRAN_PREAUTH;
 
     /**
      * @return array
      */
     public function getData()
     {
-        $data = [];
+        $data = parent::getData();
 
-        $data['type'] = $this->getType();
-        $data['auth'] = $this->getAuth();
-        $data['ta_token'] = $this->getTaToken();
+        $this->validate('card');
+
+        $data['amount'] = 0.00;
+        $data['currency_code'] = $this->getCurrency();
+        $data['reference_no'] = $this->getTransactionId();
 
         // add credit card details
-        $data['credit_card'] = [
-            'type' => self::getCardType($this->getCard()->getBrand()),
-            'cardholder_name' => $this->getCard()->getName(),
-            'card_number' => $this->getCard()->getNumber(),
-            'exp_date' => $this->getCard()->getExpiryDate('my'),
-            'cvv' => $this->getCard()->getCvv()
-        ];
+        $data['credit_card_type'] = self::getCardType($this->getCard()->getBrand());
+        $data['cc_number'] = $this->getCard()->getNumber();
+        $data['cardholder_name'] = $this->getCard()->getName();
+        $data['cc_expiry'] = $this->getCard()->getExpiryDate('my');
+        $data['cc_verification_str2'] = $this->getCard()->getCvv();
+        $data['cc_verification_str1'] = $this->getAVSHash();
+        $data['cvd_presence_ind'] = 1;
+        $data['cvd_code'] = $this->getCard()->getCvv();
+
+        $data['client_ip'] = $this->getClientIp();
+        $data['client_email'] = $this->getCard()->getEmail();
+        $data['language'] = strtoupper($this->getCard()->getCountry());
 
         return $data;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getHeaders()
-    {
-        $headers = [];
-
-        $headers['Content-Type'] = 'application/json';
-        $headers['Accept'] = 'application/json';
-        $headers['apiKey'] = $this->getApiKey();
-        $headers['token'] = $this->getMerchantToken();
-        $headers['nonce'] = hexdec(bin2hex(openssl_random_pseudo_bytes(4, $cstrong)));
-        $headers['timestamp'] = (time() * 1000);
-
-        return $headers;
-    }
-
-    /**
-     * @param $data
-     * @param $nonce
-     * @param $timestamp
-     *
-     * @return string
-     */
-    protected function buildAuthString($data, $nonce, $timestamp)
-    {
-        $dataString = sprintf(
-            '%s%s%s%s%s',
-            $this->getApiKey(),
-            $nonce,
-            $timestamp,
-            $this->getMerchantToken(),
-            json_encode($data)
-        );
-
-        return base64_encode(hash_hmac("sha256", $dataString, $this->getApiSecret(), false));
-    }
-
-    /**
-     * @param mixed $data
-     *
-     * @return PayeezyResponse
-     */
-    public function sendData($data)
-    {
-        $endpoint = $this->getEndpoint();
-
-        $headers = $this->getHeaders();
-        $headers['Authorization'] = $this->buildAuthString($data, $headers['nonce'], $headers['timestamp']);
-
-        $client = $this->httpClient->post(
-            $endpoint,
-            $headers
-        );
-
-        $client->setBody(json_encode($data), $headers['Content-Type']);
-
-        $client->getCurlOptions()->set(CURLOPT_PORT, 443);
-        $httpResponse = $client->send();
-        return $this->createResponse($httpResponse->getBody());
-    }
-
-    /**
-     * Create the response object.
-     *
-     * @param $data
-     *
-     * @return PayeezyResponse
-     */
-    protected function createResponse($data)
-    {
-        return $this->response = new PayeezyTokenizeResponse($this, json_decode((string)$data, true));
     }
 }

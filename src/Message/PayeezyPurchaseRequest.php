@@ -59,6 +59,21 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
 
     public function getData()
     {
+        $params = $this->getParameters();
+
+        if(isset($params['token']) && !empty($params['token'])) {
+            return $this->getTokenData();
+        } else {
+            return $this->getCreditCardData();
+        }
+    }
+
+    /**
+     * @return array
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    protected function getCreditCardData()
+    {
         $data = parent::getData();
 
         $this->validate('amount', 'card');
@@ -80,6 +95,35 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
         $data['client_ip'] = $this->getClientIp();
         $data['client_email'] = $this->getCard()->getEmail();
         $data['language'] = strtoupper($this->getCard()->getCountry());
+
+        return $data;
+    }
+
+    /**
+     * @return array
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    protected function getTokenData()
+    {
+        $data = parent::getData();
+
+        $this->validate('amount', 'token');
+
+        $tokenData = $this->getParameter('token');
+
+        $data['amount'] = $this->getAmount();
+        $data['currency_code'] = $this->getCurrency();
+        $data['reference_no'] = $this->getTransactionId();
+
+        $data['transarmor_token'] = $tokenData['token_data']['value'];
+
+        // add credit card details
+        $data['credit_card_type'] = $tokenData['token_data']['type'];
+        $data['cardholder_name'] = $tokenData['token_data']['cardholder_name'];
+        $data['cc_expiry'] = $tokenData['token_data']['exp_date'];
+
+        $data['client_ip'] = $this->getClientIp();
+
         return $data;
     }
 }

@@ -304,11 +304,7 @@ class PayeezyGateway extends AbstractGateway
      */
     public function purchase(array $parameters = array())
     {
-        if (isset($parameters['token'])) {
-            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyTokenPurchaseRequest', $parameters);
-        } else {
-            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyPurchaseRequest', $parameters);
-        }
+        return $this->createRequest('\Omnipay\FirstData\Message\PayeezyPurchaseRequest', $parameters);
     }
 
     /**
@@ -320,11 +316,7 @@ class PayeezyGateway extends AbstractGateway
      */
     public function authorize(array $parameters = array())
     {
-        if (isset($parameters['token'])) {
-            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyTokenAuthorizeRequest', $parameters);
-        } else {
-            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyAuthorizeRequest', $parameters);
-        }
+        return $this->createRequest('\Omnipay\FirstData\Message\PayeezyAuthorizeRequest', $parameters);
     }
 
     /**
