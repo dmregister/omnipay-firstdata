@@ -31,7 +31,7 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
      */
     protected function getHeaders()
     {
-        $headers = [];
+        $headers = array();
 
         $headers['Content-Type'] = 'application/json';
         $headers['Accept'] = 'application/json';
