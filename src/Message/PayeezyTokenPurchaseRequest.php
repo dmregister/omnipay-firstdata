@@ -7,6 +7,8 @@ use Omnipay\Common\Exception\InvalidRequestException;
 
 class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
 {
+    protected $action = self::TRAN_PURCHASE;
+
     /** API version to use. See the note about the hashing requirements for v12 or higher. */
     const API_VERSION = 'v1';
 
@@ -63,59 +65,32 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
     }
 
     /**
-     * Validates and returns the formated amount.
-     *
-     * @throws InvalidRequestException on any validation failure.
-     * @return string The amount formatted to the correct number of decimal places for the selected currency.
-     */
-    public function getAmount()
-    {
-        $amount = $this->getParameter('amount');
-
-        if ($amount !== null) {
-
-            $amount = $this->toFloat($amount);
-
-            // Check for a negative amount.
-            if (!$this->negativeAmountAllowed && $amount < 0) {
-                throw new InvalidRequestException('A negative amount is not allowed.');
-            }
-
-            // Check for a zero amount.
-            if (!$this->zeroAmountAllowed && $amount === 0.0) {
-                throw new InvalidRequestException('A zero amount is not allowed.');
-            }
-
-            // Check for rounding that may occur if too many significant decimal digits are supplied.
-            $decimal_count = strlen(substr(strrchr(sprintf('%.8g', $amount), '.'), 1));
-            if ($decimal_count > $this->getCurrencyDecimalPlaces()) {
-                throw new InvalidRequestException('Amount precision is too high for currency.');
-            }
-
-            // Convert the amount to pennies. The token endpoint only deals in pennies.
-            $amount = $amount * 100;
-
-            return (int)$amount;
-        }
-    }
-
-    /**
      * @return array
      * @throws InvalidRequestException
      */
     public function getData()
     {
-        $data = [];
+        $data = $this->getBaseData();
 
-        $this->validate('token');
+        $this->validate('amount', 'token');
 
         $data['method'] = 'token';
         $data['transaction_type'] = 'purchase';
-        $data['amount'] = $this->getAmount();
+        $data['amount'] = $this->getAmountInteger();
         $data['currency_code'] = $this->getCurrency();
         $data['token'] = $this->getToken();
 
         return $data;
+    }
+
+    /**
+     * Get the base transaction data.
+     *
+     * @return array
+     */
+    protected function getBaseData()
+    {
+        return array();
     }
 
     /**
@@ -155,10 +130,10 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
         $responseData = json_decode((string)$data, true);
 
         // Convert the amount back to dollars.
-        if(isset($responseData['amount'])) {
-            $responseData['amount'] = $this->formatCurrency(($responseData['amount']/100));
+        if (isset($responseData['amount'])) {
+            $responseData['amount'] = $this->getAmount();
         }
 
-        return $this->response = new PayeezyTokenPurchaseResponse($this, $responseData);
+        return $this->response = new PayeezyTokenResponse($this, $responseData);
     }
 }
