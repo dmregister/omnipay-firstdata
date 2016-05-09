@@ -115,12 +115,12 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
         $data['currency_code'] = $this->getCurrency();
         $data['reference_no'] = $this->getTransactionId();
 
-        $data['transarmor_token'] = $tokenData['token_data']['value'];
+        $data['transarmor_token'] = $tokenData['value'];
 
         // add credit card details
-        $data['credit_card_type'] = $tokenData['token_data']['type'];
-        $data['cardholder_name'] = $tokenData['token_data']['cardholder_name'];
-        $data['cc_expiry'] = $tokenData['token_data']['exp_date'];
+        $data['credit_card_type'] = $tokenData['credit_card_type'];
+        $data['cardholder_name'] = $tokenData['cardholder_name'];
+        $data['cc_expiry'] = $tokenData['cc_expiry'];
 
         $data['client_ip'] = $this->getClientIp();
 
