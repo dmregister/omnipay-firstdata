@@ -13,17 +13,17 @@ class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
     const API_VERSION = 'v1';
 
     /** @var string live endpoint URL base */
-    protected $liveEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions';
+    protected $liveEndpoint = 'https://api.payeezy.com/%s/transactions';
 
     /** @var string test endpoint URL base */
-    protected $testEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions';
+    protected $testEndpoint = 'https://api-cert.payeezy.com/%s/transactions';
 
     /**
      * @return string
      */
     protected function getEndpoint()
     {
-        return ($this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint);
+        return sprintf(($this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint), self::API_VERSION);
     }
 
     /**

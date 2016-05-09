@@ -13,15 +13,15 @@ class PayeezyTokenPurchaseRequestTest extends TestCase
         $request->initialize(
             array(
                 'amount' => '12.00',
-                'token' => [
+                'token' => array(
                     'token_type' => 'FDToken',
-                    'token_data' => [
+                    'token_data' => array(
                         'type'            => 'visa',
                         'value'           => '2537446225198291',
                         'cardholder_name' => 'JohnSmith',
                         'exp_date'        => '1030'
-                    ]
-                ],
+                    )
+                )
             )
         );
 
@@ -37,15 +37,15 @@ class PayeezyTokenPurchaseRequestTest extends TestCase
     {
         $options = array(
             'amount' => '12.00',
-            'token' => [
+            'token' => array(
                 'token_type' => 'FDToken',
-                'token_data' => [
+                'token_data' => array(
                     'type'            => 'maestro',
                     'value'           => '2537446225198291',
                     'cardholder_name' => 'JohnSmith',
                     'exp_date'        => '1030'
-                ]
-            ]
+                )
+            )
         );
 
         $request = new PayeezyTokenPurchaseRequest($this->getHttpClient(), $this->getHttpRequest());

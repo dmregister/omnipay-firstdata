@@ -20,15 +20,15 @@ class PayeezyTokenResponseTest extends TestCase
             'amount' => '1000',
             'currency' => 'USD',
             'cvv2' => 'I',
-            'token' => [
+            'token' => array(
                 'token_type' => 'FDToken',
-                'token_data' => [
+                'token_data' => array(
                     'type' => 'visa',
                     'cardholder_name' => 'JohnSmith',
                     'exp_date' => '1030',
                     'value' => '2537446225198291'
-                ]
-            ],
+                )
+            ),
             'bank_resp_code' => '100',
             'bank_message' => 'Approved',
             'gateway_resp_code' => '00',
@@ -53,15 +53,15 @@ class PayeezyTokenResponseTest extends TestCase
             'amount' => '530200',
             'currency' => 'USD',
             'cvv2' => 'I',
-            'token' => [
-                        'token_type' => 'FDToken',
-                'token_data' => [
-                            'type' => 'visa',
+            'token' => array(
+                'token_type' => 'FDToken',
+                'token_data' => array(
+                    'type' => 'visa',
                     'cardholder_name' => 'JohnSmith',
                     'exp_date' => '1030',
                     'value' => '2537446225198291'
-                ]
-            ],
+                )
+            ),
             'bank_resp_code' => '302',
             'bank_message' => 'Credit Floor',
             'gateway_resp_code' => '00',
