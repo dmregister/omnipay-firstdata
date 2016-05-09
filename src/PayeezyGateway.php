@@ -103,11 +103,13 @@ class PayeezyGateway extends AbstractGateway
     public function getDefaultParameters()
     {
         return array(
-            'gatewayId' => '',
-            'password'  => '',
-            'keyId'     => '',
-            'hmac'      => '',
-            'testMode'  => false,
+            'gatewayId'     => '',
+            'password'      => '',
+            'keyId'         => '',
+            'hmac'          => '',
+            'apiKey'        => '',
+            'merchantToken' => '',
+            'testMode'      => false,
         );
     }
 
@@ -216,6 +218,84 @@ class PayeezyGateway extends AbstractGateway
     }
 
     /**
+     * Get Api Key
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->getParameter('apiKey');
+    }
+
+    /**
+     * Set Api Secret
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return PayeezyGateway provides a fluent interface.
+     */
+    public function setApiKey($value)
+    {
+        return $this->setParameter('apiKey', $value);
+    }
+
+    /**
+     * Get Api Secret
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return string
+     */
+    public function getApiSecret()
+    {
+        return $this->getParameter('apiSecret');
+    }
+
+    /**
+     * Set Api Secret
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return PayeezyGateway provides a fluent interface.
+     */
+    public function setApiSecret($value)
+    {
+        return $this->setParameter('apiSecret', $value);
+    }
+
+    /**
+     * Get Merchant Token
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return string
+     */
+    public function getMerchantToken()
+    {
+        return $this->getParameter('merchantToken');
+    }
+
+    /**
+     * Set Merchant Token
+     *
+     * Calls to the Payeezy Gateway API are secured with a gateway ID and
+     * password.
+     *
+     * @return PayeezyGateway provides a fluent interface.
+     */
+    public function setMerchantToken($value)
+    {
+        return $this->setParameter('merchantToken', $value);
+    }
+
+    /**
      * Create a purchase request.
      *
      * @param array $parameters
@@ -224,7 +304,11 @@ class PayeezyGateway extends AbstractGateway
      */
     public function purchase(array $parameters = array())
     {
-        return $this->createRequest('\Omnipay\FirstData\Message\PayeezyPurchaseRequest', $parameters);
+        if(isset($parameters['token'])) {
+            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyTokenPurchaseRequest', $parameters);
+        } else {
+            return $this->createRequest('\Omnipay\FirstData\Message\PayeezyPurchaseRequest', $parameters);
+        }
     }
 
     /**
@@ -273,5 +357,17 @@ class PayeezyGateway extends AbstractGateway
     public function void(array $parameters = array())
     {
         return $this->createRequest('\Omnipay\FirstData\Message\PayeezyVoidRequest', $parameters);
+    }
+
+    /**
+     * Create a tokenize request.
+     *
+     * @param array $parameters
+     *
+     * @return \Omnipay\FirstData\Message\PayeezyTokenizeRequest
+     */
+    public function tokenize(array $parameters = array())
+    {
+        return $this->createRequest('\Omnipay\FirstData\Message\PayeezyTokenizeRequest', $parameters);
     }
 }

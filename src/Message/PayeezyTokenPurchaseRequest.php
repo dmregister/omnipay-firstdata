@@ -1,0 +1,164 @@
+<?php
+
+namespace Omnipay\FirstData\Message;
+
+
+use Omnipay\Common\Exception\InvalidRequestException;
+
+class PayeezyTokenPurchaseRequest extends PayeezyAbstractRequest
+{
+    /** API version to use. See the note about the hashing requirements for v12 or higher. */
+    const API_VERSION = 'v1';
+
+    /** @var string live endpoint URL base */
+    protected $liveEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions';
+
+    /** @var string test endpoint URL base */
+    protected $testEndpoint = 'https://api-cert.payeezy.com/'.self::API_VERSION.'/transactions';
+
+    /**
+     * @return string
+     */
+    protected function getEndpoint()
+    {
+        return ($this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHeaders()
+    {
+        $headers = [];
+
+        $headers['Content-Type'] = 'application/json';
+        $headers['Accept'] = 'application/json';
+        $headers['apiKey'] = $this->getApiKey();
+        $headers['token'] = $this->getMerchantToken();
+        $headers['nonce'] = hexdec(bin2hex(openssl_random_pseudo_bytes(4, $cstrong)));
+        $headers['timestamp'] = (time() * 1000);
+
+        return $headers;
+    }
+
+    /**
+     * @param $data
+     * @param $nonce
+     * @param $timestamp
+     *
+     * @return string
+     */
+    protected function buildAuthString($data, $nonce, $timestamp)
+    {
+        $dataString = sprintf(
+            '%s%s%s%s%s',
+            $this->getApiKey(),
+            $nonce,
+            $timestamp,
+            $this->getMerchantToken(),
+            json_encode($data)
+        );
+
+        return base64_encode(hash_hmac("sha256", $dataString, $this->getApiSecret(), false));
+    }
+
+    /**
+     * Validates and returns the formated amount.
+     *
+     * @throws InvalidRequestException on any validation failure.
+     * @return string The amount formatted to the correct number of decimal places for the selected currency.
+     */
+    public function getAmount()
+    {
+        $amount = $this->getParameter('amount');
+
+        if ($amount !== null) {
+
+            $amount = $this->toFloat($amount);
+
+            // Check for a negative amount.
+            if (!$this->negativeAmountAllowed && $amount < 0) {
+                throw new InvalidRequestException('A negative amount is not allowed.');
+            }
+
+            // Check for a zero amount.
+            if (!$this->zeroAmountAllowed && $amount === 0.0) {
+                throw new InvalidRequestException('A zero amount is not allowed.');
+            }
+
+            // Check for rounding that may occur if too many significant decimal digits are supplied.
+            $decimal_count = strlen(substr(strrchr(sprintf('%.8g', $amount), '.'), 1));
+            if ($decimal_count > $this->getCurrencyDecimalPlaces()) {
+                throw new InvalidRequestException('Amount precision is too high for currency.');
+            }
+
+            // Convert the amount to pennies. The token endpoint only deals in pennies.
+            $amount = $amount * 100;
+
+            return (int)$amount;
+        }
+    }
+
+    /**
+     * @return array
+     * @throws InvalidRequestException
+     */
+    public function getData()
+    {
+        $data = [];
+
+        $this->validate('token');
+
+        $data['method'] = 'token';
+        $data['transaction_type'] = 'purchase';
+        $data['amount'] = $this->getAmount();
+        $data['currency_code'] = $this->getCurrency();
+        $data['token'] = $this->getToken();
+
+        return $data;
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return PayeezyResponse
+     */
+    public function sendData($data)
+    {
+        $endpoint = $this->getEndpoint();
+
+        $headers = $this->getHeaders();
+        $headers['Authorization'] = $this->buildAuthString($data, $headers['nonce'], $headers['timestamp']);
+
+        $client = $this->httpClient->post(
+            $endpoint,
+            $headers
+        );
+
+        $client->setBody(json_encode($data), $headers['Content-Type']);
+
+        $client->getCurlOptions()->set(CURLOPT_PORT, 443);
+        $httpResponse = $client->send();
+
+        return $this->createResponse($httpResponse->getBody());
+    }
+
+    /**
+     * Create the response object.
+     *
+     * @param $data
+     *
+     * @return PayeezyResponse
+     */
+    protected function createResponse($data)
+    {
+        $responseData = json_decode((string)$data, true);
+
+        // Convert the amount back to dollars.
+        if(isset($responseData['amount'])) {
+            $responseData['amount'] = $this->formatCurrency(($responseData['amount']/100));
+        }
+
+        return $this->response = new PayeezyTokenPurchaseResponse($this, $responseData);
+    }
+}
