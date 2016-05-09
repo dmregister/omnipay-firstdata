@@ -55,5 +55,4 @@ class PayeezyPurchaseResponseTest extends TestCase
         $this->assertEquals('::', $response->getTransactionReference());
         $this->assertEquals('00', $response->getCode());
     }
-
 }

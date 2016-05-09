@@ -74,5 +74,4 @@ class PayeezyTokenResponseTest extends TestCase
         $this->assertEquals('302', $response->getDataItem('bank_resp_code'));
         $this->assertEquals('Credit Floor', $response->getDataItem('bank_message'));
     }
-
 }
