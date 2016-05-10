@@ -115,7 +115,7 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
         $data['currency_code'] = $this->getCurrency();
         $data['reference_no'] = $this->getTransactionId();
 
-        $data['transarmor_token'] = $tokenData['value'];
+        $data['transarmor_token'] = $tokenData['transarmor_token'];
 
         // add credit card details
         $data['credit_card_type'] = $tokenData['credit_card_type'];
