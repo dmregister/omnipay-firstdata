@@ -103,11 +103,11 @@ class PayeezyGateway extends AbstractGateway
     public function getDefaultParameters()
     {
         return array(
-            'gatewayId'     => '',
-            'password'      => '',
-            'keyId'         => '',
-            'hmac'          => '',
-            'testMode'      => false,
+            'gatewayId' => '',
+            'password'  => '',
+            'keyId'     => '',
+            'hmac'      => '',
+            'testMode'  => false,
         );
     }
 
