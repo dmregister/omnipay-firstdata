@@ -107,8 +107,6 @@ class PayeezyGateway extends AbstractGateway
             'password'      => '',
             'keyId'         => '',
             'hmac'          => '',
-            'apiKey'        => '',
-            'merchantToken' => '',
             'testMode'      => false,
         );
     }
@@ -215,84 +213,6 @@ class PayeezyGateway extends AbstractGateway
     public function setHmac($value)
     {
         return $this->setParameter('hmac', $value);
-    }
-
-    /**
-     * Get Api Key
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getApiKey()
-    {
-        return $this->getParameter('apiKey');
-    }
-
-    /**
-     * Set Api Secret
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyGateway provides a fluent interface.
-     */
-    public function setApiKey($value)
-    {
-        return $this->setParameter('apiKey', $value);
-    }
-
-    /**
-     * Get Api Secret
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getApiSecret()
-    {
-        return $this->getParameter('apiSecret');
-    }
-
-    /**
-     * Set Api Secret
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyGateway provides a fluent interface.
-     */
-    public function setApiSecret($value)
-    {
-        return $this->setParameter('apiSecret', $value);
-    }
-
-    /**
-     * Get Merchant Token
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return string
-     */
-    public function getMerchantToken()
-    {
-        return $this->getParameter('merchantToken');
-    }
-
-    /**
-     * Set Merchant Token
-     *
-     * Calls to the Payeezy Gateway API are secured with a gateway ID and
-     * password.
-     *
-     * @return PayeezyGateway provides a fluent interface.
-     */
-    public function setMerchantToken($value)
-    {
-        return $this->setParameter('merchantToken', $value);
     }
 
     /**
