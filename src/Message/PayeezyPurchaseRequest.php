@@ -135,7 +135,8 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
      * @return array
      * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
-    protected function getAchData() {
+    protected function getAchData()
+    {
 
         $data = parent::getData();
 
