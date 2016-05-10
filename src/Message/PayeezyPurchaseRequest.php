@@ -61,7 +61,7 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
     {
         $params = $this->getParameters();
 
-        if(isset($params['token']) && !empty($params['token'])) {
+        if (isset($params['token']) && !empty($params['token'])) {
             return $this->getTokenData();
         } else {
             return $this->getCreditCardData();
