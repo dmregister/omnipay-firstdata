@@ -186,7 +186,7 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Get the request accountId
+     * Get account number
      *
      * @return string
      */
@@ -196,10 +196,10 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Set the request accountId
+     * Set account number
      *
      * @param string $value
-     * @return WebserviceAbstractRequest provides a fluent interface.
+     * @return PayeezyAbstractRequest provides a fluent interface.
      */
     public function setAccountNumber($value)
     {
@@ -207,7 +207,7 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Get the request accountId
+     * Get Routing Number
      *
      * @return string
      */
@@ -217,10 +217,10 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Set the request accountId
+     * Set Routing Number
      *
      * @param string $value
-     * @return WebserviceAbstractRequest provides a fluent interface.
+     * @return PayeezyAbstractRequest provides a fluent interface.
      */
     public function setRoutingNumber($value)
     {
@@ -228,7 +228,7 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Get the request accountId
+     * Get Customer Reference
      *
      * @return string
      */
@@ -238,10 +238,10 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
-     * Set the request accountId
+     * Set Customer Reference
      *
      * @param string $value
-     * @return WebserviceAbstractRequest provides a fluent interface.
+     * @return PayeezyAbstractRequest provides a fluent interface.
      */
     public function setCustomerReference($value)
     {
