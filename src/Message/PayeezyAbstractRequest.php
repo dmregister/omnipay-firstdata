@@ -186,6 +186,69 @@ abstract class PayeezyAbstractRequest extends \Omnipay\Common\Message\AbstractRe
     }
 
     /**
+     * Get the request accountId
+     *
+     * @return string
+     */
+    public function getAccountNumber()
+    {
+        return $this->getParameter('accountNumber');
+    }
+
+    /**
+     * Set the request accountId
+     *
+     * @param string $value
+     * @return WebserviceAbstractRequest provides a fluent interface.
+     */
+    public function setAccountNumber($value)
+    {
+        return $this->setParameter('accountNumber', $value);
+    }
+
+    /**
+     * Get the request accountId
+     *
+     * @return string
+     */
+    public function getRoutingNumber()
+    {
+        return $this->getParameter('routingNumber');
+    }
+
+    /**
+     * Set the request accountId
+     *
+     * @param string $value
+     * @return WebserviceAbstractRequest provides a fluent interface.
+     */
+    public function setRoutingNumber($value)
+    {
+        return $this->setParameter('routingNumber', $value);
+    }
+
+    /**
+     * Get the request accountId
+     *
+     * @return string
+     */
+    public function getCustomerReference()
+    {
+        return $this->getParameter('customer_ref');
+    }
+
+    /**
+     * Set the request accountId
+     *
+     * @param string $value
+     * @return WebserviceAbstractRequest provides a fluent interface.
+     */
+    public function setCustomerReference($value)
+    {
+        return $this->setParameter('customer_ref', $value);
+    }
+
+    /**
      * Get the base transaction data.
      *
      * @return array

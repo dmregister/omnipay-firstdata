@@ -61,8 +61,10 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
     {
         $params = $this->getParameters();
 
-        if (isset($params['token']) && !empty($params['token'])) {
+        if (isset($params['token'])) {
             return $this->getTokenData();
+        } elseif (isset($params['accountNumber']) && !empty($params['routingNumber'])){
+            return $this->getAchData();
         } else {
             return $this->getCreditCardData();
         }
@@ -80,6 +82,7 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
 
         $data['amount'] = $this->getAmount();
         $data['currency_code'] = $this->getCurrency();
+        $data['customer_ref'] = $this->getCustomerReference();
         $data['reference_no'] = $this->getTransactionId();
 
         // add credit card details
@@ -113,6 +116,7 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
 
         $data['amount'] = $this->getAmount();
         $data['currency_code'] = $this->getCurrency();
+        $data['customer_ref'] = $this->getCustomerReference();
         $data['reference_no'] = $this->getTransactionId();
 
         $data['transarmor_token'] = $tokenData['value'];
@@ -123,6 +127,28 @@ class PayeezyPurchaseRequest extends PayeezyAbstractRequest
         $data['cc_expiry'] = $tokenData['cc_expiry'];
 
         $data['client_ip'] = $this->getClientIp();
+
+        return $data;
+    }
+
+    /**
+     * @return array
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
+     */
+    protected function getAchData() {
+
+        $data = parent::getData();
+
+        $this->validate('amount', 'card', 'accountNumber', 'routingNumber');
+
+        $data['amount'] = $this->getAmount();
+        $data['currency_code'] = $this->getCurrency();
+        $data['customer_ref'] = $this->getCustomerReference();
+        $data['reference_no'] = $this->getTransactionId();
+
+        $data['account_number'] = $this->getAccountNumber();
+        $data['bank_id'] = $this->getRoutingNumber();
+        $data['cardholder_name'] = $this->getCard()->getName();
 
         return $data;
     }
